@@ -1,7 +1,7 @@
-import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
+import Main from '../pages/Main';
 
 const AppRouter = createBrowserRouter([
     {
@@ -14,6 +14,11 @@ const AppRouter = createBrowserRouter([
       element: <NotFound />,
       index: true,
     },
+    {
+      path: '/main/',
+      element: <Main />,
+      index: true,
+    }
   ]);
   
   export default AppRouter;

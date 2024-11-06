@@ -1,0 +1,74 @@
+/* 꿀모으기 퍼센트 bar */
+.honey-container {
+    padding: 1rem;
+    max-width: 400px;
+  }
+  
+  .honey-title {
+    font-size: 1.25rem;
+    color: #4b3621;
+    margin-bottom: 0.5rem;
+  }
+  
+  .honey-progress-wrapper {
+    background: white;
+    border-radius: 8px;
+    padding: 4px;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .honey-progress-bar {
+    background-color: #ffd700;
+    height: 24px;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  
+  .honey-percentage {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4b3621;
+    font-weight: bold;
+  }
+
+
+/* compoents/Logobar */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 15px;
+    background-color: #e0e0e0; /* Adjust to match the background color */
+    border-radius: 8px; /* Optional: rounds the corners slightly */
+  }
+  
+  .navbar-brand img {
+    width: 180px;
+    height: auto;
+  }
+  
+  .logout-button {
+    background-color: #f5d16b; /* Button color */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    color: black;
+
+  }
+
+  .logout-button:hover {
+    background-color: #e2b654; /* Button hover effect */
+  }
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  

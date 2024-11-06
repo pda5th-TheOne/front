@@ -1,0 +1,17 @@
+#contents {
+  width: 100vw;
+  height: 100vh;
+}
+
+#contents-left {
+  max-height: 100vh;
+  /* background-color: lightcyan; */
+  display: flex;
+  flex-direction: column;
+}
+
+#contents-right {
+  max-height: 100vh;
+  overflow-y: auto;
+  /* background-color: lightgoldenrodyellow; */
+}

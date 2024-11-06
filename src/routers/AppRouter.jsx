@@ -1,7 +1,8 @@
-import React from "react";
-import { createBrowserRouter } from "react-router-dom";
-import Home from "../pages/Home";
-import NotFound from "../pages/NotFound";
+import { createBrowserRouter } from 'react-router-dom';
+import Home from '../pages/Home';
+import NotFound from '../pages/NotFound';
+import MainPage from '../pages/MainPage';
+import Practice from '../pages/Practice';
 import Detail from "../pages/Detail";
 
 const AppRouter = createBrowserRouter([
@@ -11,6 +12,12 @@ const AppRouter = createBrowserRouter([
     index: true,
   },
   {
+    path: '/main/',
+    element: <MainPage />,
+    index: true,
+  },
+  {
+    path: '*',
     path: '/practice',
     element: <Practice />,
     index: true,

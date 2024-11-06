@@ -1,10 +1,17 @@
 import React from 'react';
+import './components.css';
 
 export default function Logo() {
   return (
-    <div className="d-flex align-items-center gap-3">
-      <h1 className="h3 mb-0 text-warning">THE ONE</h1>
-      <span className="text-muted">11월 3일 수업</span>
-    </div>
+    <nav className="navbar bg-body-tertiary">
+      <div className="container-fluid">
+        <a className="navbar-brand" href="#">
+          <img src="../../../images/main_logo.png" alt="Bootstrap" width="100" height="55"/>
+        </a>
+        <button className="logout-button ms-auto">
+          로그아웃
+        </button>
+      </div>
+    </nav>
   );
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
+import Practice from '../pages/Practice';
 
 const AppRouter = createBrowserRouter([
     {
@@ -9,6 +10,11 @@ const AppRouter = createBrowserRouter([
         element: <Home />,
         index: true,
       },
+    {
+      path: '/practice',
+      element: <Practice />,
+      index: true,
+    },
     {
       path: '*',
       element: <NotFound />,

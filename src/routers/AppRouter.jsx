@@ -11,6 +11,11 @@ const AppRouter = createBrowserRouter([
     index: true,
   },
   {
+    path: '/practice',
+    element: <Practice />,
+    index: true,
+  },
+  {
     path: "/detail",
     element: <Detail />,
     index: true,

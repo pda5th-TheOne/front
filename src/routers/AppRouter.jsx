@@ -1,24 +1,24 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
-import Main from '../pages/Main';
+import MainPage from '../pages/MainPage';
 
 const AppRouter = createBrowserRouter([
-    {
-        path: '/home',
-        element: <Home />,
-        index: true,
-      },
-    {
-      path: '*',
-      element: <NotFound />,
-      index: true,
-    },
-    {
-      path: '/main/',
-      element: <Main />,
-      index: true,
-    }
-  ]);
-  
-  export default AppRouter;
+  {
+    path: '/home',
+    element: <Home />,
+    index: true,
+  },
+  {
+    path: '/main/',
+    element: <MainPage />,
+    index: true,
+  },
+  {
+    path: '*',
+    element: <NotFound />,
+    index: true,
+  },
+]);
+
+export default AppRouter;

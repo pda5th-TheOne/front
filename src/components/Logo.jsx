@@ -1,9 +1,9 @@
-import '../App.css';
+import './components.css';
 
 export default function Logo() {
   return (
     <nav className="navbar bg-body-tertiary">
-      <div className="container">
+      <div className="container-fluid">
         <a className="navbar-brand" href="#">
           <img src="../../../images/main_logo.png" alt="Bootstrap" width="100" height="55"/>
         </a>

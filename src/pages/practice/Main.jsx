@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import Logo from '../../components/logo';
+import Logo from '../../components/Logo';
 import Assignment from './Assignment';
 import Answer from './Answer';
 import Submit from './Submit';
@@ -11,7 +11,6 @@ export default function Main() {
       <header className="border-bottom">
         <Container className="d-flex justify-content-between align-items-center py-3">
           <Logo />
-          <Button variant="warning">로그아웃</Button>
         </Container>
       </header>
       <main>

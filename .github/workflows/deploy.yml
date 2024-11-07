@@ -35,17 +35,13 @@ jobs:
         key: ${{ secrets.EC2_KEY }}
         port: 22
         script: |
-          # Docker 설치 확인
-          if ! command -v docker &> /dev/null
-          then
-              echo "Docker not installed. Installing..."
-              sudo amazon-linux-extras install docker -y
-              sudo service docker start
-              sudo usermod -a -G docker ec2-user
-          fi
+          # backend_network가 없으면 생성
+          docker network ls | grep backend_network || docker network create backend_network
           
           # 최신 이미지를 pull하고 기존 컨테이너를 중단 및 삭제 후 새로 시작
           docker pull ${{ secrets.DOCKER_IMAGE_NAME }}
           docker stop my-app || true
           docker rm my-app || true
-          docker run -d --name my-app -p 80:80 ${{ secrets.DOCKER_IMAGE_NAME }}
+          
+          # 프론트엔드 컨테이너를 backend_network에 연결하여 실행
+          docker run -d --name my-app --network backend_network -p 80:80 ${{ secrets.DOCKER_IMAGE_NAME }}

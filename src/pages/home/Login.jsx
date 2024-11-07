@@ -25,7 +25,7 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/login',
+        '/api/auth/login',
         formData
       );
       setSuccessMessage('로그인 성공!');

@@ -1,16 +1,23 @@
-import { useState } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Form, Button, Container, Alert, Card } from 'react-bootstrap';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [formData, setFormData] = useState({
     username: '',
-    password: '',
+    password: '', // 비밀번호 필드 추가
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const navigate = useNavigate(); // 리디렉션을 위한 navigate 훅
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      setSuccessMessage(location.state.successMessage);
+    }
+  }, [location.state]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,39 +34,38 @@ export default function Login() {
 
     try {
       const response = await axios.post('/api/auth/login', formData);
-
-      // 로그인 성공 시 엑세스 토큰을 로컬 스토리지에 저장
       localStorage.setItem('accessToken', response.data.accessToken);
-
-      setSuccessMessage('로그인 성공!');
-      setFormData({ username: '', password: '' }); // 폼 초기화
-
-      // 로그인 성공 후 홈 페이지로 리디렉션
-      navigate('/main'); // 또는 다른 리디렉션 경로로 설정
+      navigate('/main');
     } catch (error) {
       setErrorMessage('로그인에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
   return (
-    <>
-      <Row className="justify-content-center">
-        <Col md={6}>
-          <img
-            src="../../../images/main_logo.png"
-            alt="Bootstrap"
-            width="100"
-            height="55"
-          />
-          <h2>로그인</h2>
-          {errorMessage && (
-            <div className="alert alert-danger">{errorMessage}</div>
-          )}
-          {successMessage && (
-            <div className="alert alert-success">{successMessage}</div>
-          )}
+    <Container fluid className="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+      <Card className="shadow-lg border-0" style={{ maxWidth: '400px', width: '100%' }}>
+        <Card.Body className="p-5">
+          <div className="text-center mb-4">
+            <img
+              src="/images/bee_logo.png"
+              alt="Bee Logo"
+              width="100"
+              height="100"
+              className="mb-3"
+            />
+            <img
+              src="/images/main_logo.png"
+              alt="Logo"
+              width="180"
+              height="55"
+            />
+            <h4 className="fw-bold mb-2" style={{ color: '#F2A900' }}>로그인</h4>
+          </div>
+          {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+          {successMessage && <Alert variant="success">{successMessage}</Alert>}
           <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formEmail">
+            {/* 이메일 입력 필드 */}
+            <Form.Group className="mb-3" controlId="formEmail">
               <Form.Label>이메일</Form.Label>
               <Form.Control
                 type="email"
@@ -68,10 +74,12 @@ export default function Login() {
                 value={formData.username}
                 onChange={handleChange}
                 required
+                className="border-warning"
               />
             </Form.Group>
 
-            <Form.Group controlId="formPassword">
+            {/* 비밀번호 입력 필드 복구 */}
+            <Form.Group className="mb-3" controlId="formPassword">
               <Form.Label>비밀번호</Form.Label>
               <Form.Control
                 type="password"
@@ -80,18 +88,26 @@ export default function Login() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                className="border-warning"
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="mt-3">
-              로그인
-            </Button>
-            <div>
-              <Link to="/signup">회원가입</Link>
+            <div className="d-grid gap-2">
+              <Button variant="warning" type="submit" className="mt-3 text-white fw-bold">
+                로그인
+              </Button>
+              <Form.Text
+                className="text-center d-block mt-2"
+                as="a"
+                style={{ fontSize: '0.875rem', color: '#F2A900', textDecoration: 'none', cursor: 'pointer' }}
+                onClick={() => navigate('/signup')}
+              >
+                아이디가 없으신가요?
+              </Form.Text>
             </div>
           </Form>
-        </Col>
-      </Row>
-    </>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 }

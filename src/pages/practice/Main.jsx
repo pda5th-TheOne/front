@@ -9,9 +9,7 @@ export default function Main() {
   return (
     <div className="min-vh-100 bg-light">
       <header className="border-bottom">
-        <Container className="d-flex justify-content-between align-items-center py-3">
           <Logo />
-        </Container>
       </header>
       <main>
         <Container className="py-4">

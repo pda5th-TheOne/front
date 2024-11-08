@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ export default function Login() {
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate(); // 리디렉션을 위한 navigate 훅
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,12 +26,16 @@ export default function Login() {
     setSuccessMessage('');
 
     try {
-      const response = await axios.post(
-        '/api/auth/login',
-        formData
-      );
+      const response = await axios.post('/api/auth/login', formData);
+
+      // 로그인 성공 시 엑세스 토큰을 로컬 스토리지에 저장
+      localStorage.setItem('accessToken', response.data.accessToken);
+
       setSuccessMessage('로그인 성공!');
       setFormData({ username: '', password: '' }); // 폼 초기화
+
+      // 로그인 성공 후 홈 페이지로 리디렉션
+      navigate('/main'); // 또는 다른 리디렉션 경로로 설정
     } catch (error) {
       setErrorMessage('로그인에 실패했습니다. 다시 시도해주세요.');
     }
@@ -80,6 +86,9 @@ export default function Login() {
             <Button variant="primary" type="submit" className="mt-3">
               로그인
             </Button>
+            <div>
+              <Link to="/signup">회원가입</Link>
+            </div>
           </Form>
         </Col>
       </Row>

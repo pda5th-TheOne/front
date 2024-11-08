@@ -1,41 +1,47 @@
-import { useState, useEffect } from "react";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import "./ContentsLeft.css";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import { Link } from 'react-router-dom'; // react-router-dom에서 Link를 import
+import './ContentsLeft.css';
 
 export default function Practice() {
-  const [TILs, setTILs] = useState([]);
+  const [practices, setPractices] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [newTIL, setNewTIL] = useState("");
+  const [newPractice, setNewPractice] = useState('');
 
   useEffect(() => {
-    // Initial TIL list setup
-    setTILs([
-      "장우진의 블로그",
-      "이민선의 학습기록",
-      "이하늘의 블로그",
-      "조인후의 학습일기",
-      "멘토님의 추천 자료",
-    ]);
+    // Initial practices list setup
+    setPractices(['실습1', '실습2', '실습3', '실습4', '실습5']);
   }, []);
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => {
     setShowModal(false);
-    setNewTIL("");
+    setNewPractice(''); // 변경된 변수명으로 수정
   };
 
-  const handleAddTIL = () => {
-    if (newTIL.trim()) {
-      setTILs([...TILs, newTIL]);
-      setNewTIL("");
-      setShowModal(false);
+  const handleAddPractice = async () => {
+    if (newPractice.trim()) {
+      try {
+        // API로 새로운 practice 데이터 POST 요청
+        // await axios.post("/api/practice", { name: newPractice });
+
+        // practices 리스트 업데이트
+        setPractices((prevPractices) => [...prevPractices, newPractice]);
+
+        // 모달 닫기 및 상태 초기화
+        setNewPractice(''); // 변경된 변수명으로 수정
+        setShowModal(false);
+      } catch (error) {
+        console.error('Failed to add practice data:', error);
+      }
     }
   };
 
   return (
-    <div className="container">
+    <div className="detail-container">
       <div className="header">
         <h1>실습</h1>
         <button className="add-button" onClick={handleShowModal}>
@@ -43,9 +49,15 @@ export default function Practice() {
         </button>
       </div>
       <div className="til-list">
-        {TILs.map((til, index) => (
+        {practices.map((practice, index) => (
           <div key={index} className="til-item">
-            {til}
+            {/* 각 실습 항목을 클릭 시 해당 링크로 이동 */}
+            <Link
+              to={`/practice/${index + 1}/assignment`}
+              className="practice-link"
+            >
+              {practice}
+            </Link>
           </div>
         ))}
       </div>
@@ -53,17 +65,17 @@ export default function Practice() {
       {/* 모달창 */}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Add New TIL</Modal.Title>
+          <Modal.Title>Add New Practice</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formTIL">
-              <Form.Label>New TIL</Form.Label>
+            <Form.Group controlId="formPractice">
+              <Form.Label>New Practice</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter new TIL"
-                value={newTIL}
-                onChange={(e) => setNewTIL(e.target.value)}
+                placeholder="Enter new practice"
+                value={newPractice} // 변경된 변수명으로 수정
+                onChange={(e) => setNewPractice(e.target.value)} // 변경된 변수명으로 수정
               />
             </Form.Group>
           </Form>
@@ -72,7 +84,7 @@ export default function Practice() {
           <Button variant="secondary" onClick={handleCloseModal}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleAddTIL}>
+          <Button variant="primary" onClick={handleAddPractice}>
             Add
           </Button>
         </Modal.Footer>

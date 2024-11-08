@@ -1,33 +1,33 @@
-import { useState } from "react";
-import { Card, Button, Form, Container } from "react-bootstrap";
+import { useState } from 'react';
+import { Card, Button, Form, Container } from 'react-bootstrap';
 
 export default function Question() {
   const [questions, setQuestions] = useState([
-    "실습1 질문 있습니다! 언제 fetch를 사용하고 언제 axios 사용하는 건가요?",
+    '실습1 질문 있습니다! 언제 fetch를 사용하고 언제 axios 사용하는 건가요?',
   ]);
   const [answers, setAnswers] = useState({});
-  const [newQuestion, setNewQuestion] = useState("");
-  const [newAnswer, setNewAnswer] = useState("");
+  const [newQuestion, setNewQuestion] = useState('');
+  const [newAnswer, setNewAnswer] = useState('');
   const [activeQuestion, setActiveQuestion] = useState(null); // 활성화된 답변 입력 필드를 위한 상태
 
   const handleQuestionSubmit = (e) => {
     // 질문 등록을 위한 함수
     e.preventDefault();
-    if (newQuestion.trim() !== "") {
+    if (newQuestion.trim() !== '') {
       setQuestions([...questions, newQuestion]);
-      setNewQuestion("");
+      setNewQuestion('');
     }
   };
 
   const handleAnswerSubmit = (e, questionIndex) => {
     // 답변 등록을 위한 함수
     e.preventDefault();
-    if (newAnswer.trim() !== "") {
+    if (newAnswer.trim() !== '') {
       const updatedAnswers = { ...answers };
       if (!updatedAnswers[questionIndex]) updatedAnswers[questionIndex] = [];
       updatedAnswers[questionIndex].push(newAnswer);
       setAnswers(updatedAnswers);
-      setNewAnswer("");
+      setNewAnswer('');
       setActiveQuestion(null);
     }
   };
@@ -37,7 +37,7 @@ export default function Question() {
   };
 
   return (
-    <Container className="py-4">
+    <>
       <h2 className="mb-4">질문</h2>
 
       {questions.map((question, questionIndex) => (
@@ -49,7 +49,7 @@ export default function Question() {
                 variant="warning"
                 size="sm"
                 className="float-end"
-                style={{ fontSize: "0.875rem" }}
+                style={{ fontSize: '0.875rem' }}
                 onClick={() => handleReplyClick(questionIndex)}
               >
                 답변
@@ -108,6 +108,6 @@ export default function Question() {
           </div>
         </Form.Group>
       </Form>
-    </Container>
+    </>
   );
 }

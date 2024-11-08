@@ -1,14 +1,16 @@
-import { Container, Row, Col } from "react-bootstrap";
-import "./Main.css";
+import { Container, Row, Col } from 'react-bootstrap';
+import './Main.css';
 
-import TIL from "./TIL";
-import Practice from "./Practice";
-import Question from "./Question";
+import Logo from '../../components/Logo';
+
+import TIL from './TIL';
+import Practice from './Practice';
+import Question from './Question';
 
 export default function Main() {
   return (
     <Container fluid>
-      <div>Logo</div>
+      <Logo></Logo>
       <Row id="contents">
         <Col id="contents-left" xs={4} className="d-flex flex-column">
           <div id="TIL">

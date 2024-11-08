@@ -1,26 +1,56 @@
-import { useState } from 'react';
-import { Card, Button, Form, Container } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
+import { Card, Button, Form } from 'react-bootstrap';
+import axios from 'axios';
 
-export default function Question() {
-  const [questions, setQuestions] = useState([
-    '실습1 질문 있습니다! 언제 fetch를 사용하고 언제 axios 사용하는 건가요?',
-  ]);
+export default function Question({ id }) {
+  const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [newQuestion, setNewQuestion] = useState('');
   const [newAnswer, setNewAnswer] = useState('');
-  const [activeQuestion, setActiveQuestion] = useState(null); // 활성화된 답변 입력 필드를 위한 상태
+  const [activeQuestion, setActiveQuestion] = useState(null);
 
-  const handleQuestionSubmit = (e) => {
-    // 질문 등록을 위한 함수
+  const accessToken = localStorage.getItem('accessToken'); // Fetch access token from local storage
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await axios.get(`/api/board/${id}/questions`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Include access token in header
+          },
+        });
+        setQuestions(Array.isArray(response.data) ? response.data : []); // Ensure data is an array
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+      }
+    };
+
+    fetchQuestions();
+  }, [accessToken, id]);
+
+  // Submit a new question to the API
+  const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     if (newQuestion.trim() !== '') {
-      setQuestions([...questions, newQuestion]);
-      setNewQuestion('');
+      try {
+        const response = await axios.post(
+          `/api/board/${id}/questions`,
+          { question: newQuestion },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // Include access token in header
+            },
+          }
+        );
+        setQuestions([...questions, response.data]); // Update state with new question
+        setNewQuestion(''); // Clear input field
+      } catch (error) {
+        console.error('Error adding question:', error);
+      }
     }
   };
 
   const handleAnswerSubmit = (e, questionIndex) => {
-    // 답변 등록을 위한 함수
     e.preventDefault();
     if (newAnswer.trim() !== '') {
       const updatedAnswers = { ...answers };
@@ -33,7 +63,7 @@ export default function Question() {
   };
 
   const handleReplyClick = (questionIndex) => {
-    setActiveQuestion(questionIndex); // 특정 질문에 대한 답변 입력 필드 표시
+    setActiveQuestion(questionIndex);
   };
 
   return (
@@ -57,7 +87,7 @@ export default function Question() {
             </Card.Body>
           </Card>
 
-          {/* 해당 질문에 대한 답변 렌더링 */}
+          {/* Render answers for each question */}
           {answers[questionIndex]?.map((answer, index) => (
             <Card key={index} className="mb-2 ms-4">
               <Card.Body>
@@ -66,7 +96,7 @@ export default function Question() {
             </Card>
           ))}
 
-          {/* 활성화된 질문에만 답변 입력 필드 표시 */}
+          {/* Show answer input field only for active question */}
           {activeQuestion === questionIndex && (
             <Form
               onSubmit={(e) => handleAnswerSubmit(e, questionIndex)}
@@ -91,7 +121,7 @@ export default function Question() {
         </div>
       ))}
 
-      {/* 질문 작성 필드 */}
+      {/* Question input field */}
       <Form onSubmit={handleQuestionSubmit} className="mt-4">
         <Form.Group>
           <Form.Label>질문 작성하기</Form.Label>

@@ -17,7 +17,7 @@ export default function Logo() {
     <nav id="logo-bar" className="navbar bg-body-tertiary">
       <div className="container-fluid">
         <img
-          src="../../../images/main_logo.png"
+          src="/images/main_logo.png"
           alt="Logo"
           width="180"
           height="55"

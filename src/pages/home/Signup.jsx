@@ -1,16 +1,18 @@
-import { useState } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Form, Button, Container, Alert, Card } from 'react-bootstrap';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
-    name: '', // 이름 필드 추가
-    username: '', // 이메일 필드
+    name: '',
+    email: '',
     password: '',
     confirmPassword: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,7 +25,6 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
-    setSuccessMessage('');
 
     if (formData.password !== formData.confirmPassword) {
       setErrorMessage('비밀번호가 일치하지 않습니다.');
@@ -31,39 +32,42 @@ export default function Signup() {
     }
 
     try {
-      const response = await axios.post('/api/users/signup', formData);
-      setSuccessMessage('회원가입 성공!');
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      }); // 폼 초기화
+      await axios.post('/api/users/signup', formData);
+      navigate('/', { state: { successMessage: '회원가입이 성공적으로 완료되었습니다!' } });
     } catch (error) {
       setErrorMessage('회원가입에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
+
   return (
-    <>
-      <Row className="justify-content-center">
-        <Col md={6}>
-          <img
-            src="../../../images/main_logo.png"
-            alt="Bootstrap"
-            width="100"
-            height="55"
-          />
-          <h2>회원가입</h2>
+    <Container fluid className="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+      <Card className="shadow-lg border-0" style={{ maxWidth: '400px', width: '100%' }}>
+        <Card.Body className="p-5">
+          <div className="text-center mb-4">
+            <img
+              src="/images/bee_logo.png"
+              alt="Bee Logo"
+              width="100"
+              height="100"
+              className="mb-3"
+            />
+            <img
+              src="/images/main_logo.png"
+              alt="Logo"
+              width="180"
+              height="55"
+            />
+            <h4 className="fw-bold mb-2" style={{ color: '#F2A900' }}>회원가입</h4>
+          </div>
           {errorMessage && (
-            <div className="alert alert-danger">{errorMessage}</div>
+            <Alert variant="danger">{errorMessage}</Alert>
           )}
           {successMessage && (
-            <div className="alert alert-success">{successMessage}</div>
+            <Alert variant="success">{successMessage}</Alert>
           )}
           <Form onSubmit={handleSubmit}>
-            {/* 이름 입력 필드 추가 */}
-            <Form.Group controlId="formName">
+            <Form.Group className="mb-3" controlId="formName">
               <Form.Label>이름</Form.Label>
               <Form.Control
                 type="text"
@@ -72,11 +76,11 @@ export default function Signup() {
                 value={formData.name}
                 onChange={handleChange}
                 required
+                className="border-warning"
               />
             </Form.Group>
 
-            {/* 이메일 입력 필드 */}
-            <Form.Group controlId="formEmail">
+            <Form.Group className="mb-3" controlId="formEmail">
               <Form.Label>이메일</Form.Label>
               <Form.Control
                 type="email"
@@ -85,11 +89,11 @@ export default function Signup() {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                className="border-warning"
               />
             </Form.Group>
 
-            {/* 비밀번호 입력 필드 */}
-            <Form.Group controlId="formPassword">
+            <Form.Group className="mb-3" controlId="formPassword">
               <Form.Label>비밀번호</Form.Label>
               <Form.Control
                 type="password"
@@ -98,11 +102,11 @@ export default function Signup() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                className="border-warning"
               />
             </Form.Group>
 
-            {/* 비밀번호 확인 입력 필드 */}
-            <Form.Group controlId="formConfirmPassword">
+            <Form.Group className="mb-3" controlId="formConfirmPassword">
               <Form.Label>비밀번호 확인</Form.Label>
               <Form.Control
                 type="password"
@@ -111,15 +115,33 @@ export default function Signup() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
+                className="border-warning"
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="mt-3">
+            <div className="d-grid gap-2">
+            <Button variant="warning" type="submit" className="mt-3 text-white fw-bold">
               회원가입
             </Button>
+              <Form.Text 
+                className="text-center d-block mt-2" 
+                as="a" 
+                style={{ 
+                  fontSize: '0.875rem', 
+                  color: '#F2A900', 
+                  textDecoration: 'none', 
+                  cursor: 'pointer' 
+                }}
+                onClick={() => navigate('/')}
+                onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
+                onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+              >
+                로그인 페이지로 돌아가기
+              </Form.Text>
+            </div>
           </Form>
-        </Col>
-      </Row>
-    </>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 }

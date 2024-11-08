@@ -1,19 +1,35 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Home from '../pages/Home';
-import NotFound from '../pages/NotFound';
 import MainPage from '../pages/MainPage';
+import Detail from '../pages/Detail';
 import Practice from '../pages/Practice';
-import Detail from "../pages/Detail";
+import NotFound from '../pages/NotFound';
+import Signup from '../pages/home/Signup';
+import Login from '../pages/home/Login'; // Login import 추가
 
 const AppRouter = createBrowserRouter([
   {
-    path: "/home",
-    element: <Home />,
-    index: true,
+    path: '/',
+    element: <Home />, // Home 컴포넌트를 부모로 설정
+    children: [
+      {
+        path: '/', // '/' 경로에서 Login 컴포넌트 렌더링
+        element: <Login />,
+      },
+      {
+        path: 'signup', // '/signup' 경로에서 Signup 컴포넌트 렌더링
+        element: <Signup />,
+      },
+    ],
   },
   {
     path: '/main/',
     element: <MainPage />,
+    index: true,
+  },
+  {
+    path: '/detail',
+    element: <Detail />,
     index: true,
   },
   {
@@ -22,12 +38,7 @@ const AppRouter = createBrowserRouter([
     index: true,
   },
   {
-    path: "/detail",
-    element: <Detail />,
-    index: true,
-  },
-  {
-    path: "*",
+    path: '*',
     element: <NotFound />,
     index: true,
   },

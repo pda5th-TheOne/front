@@ -1,38 +1,24 @@
 /* 로고바 */
-.navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px 15px;
-    background-color: #e0e0e0; /* Adjust to match the background color */
-    border-radius: 8px; /* Optional: rounds the corners slightly */
-  }
-  
-  .navbar-brand img {
-    width: 180px;
-    height: auto;
-  }
-  
-  .logout-button {
-    background-color: #f5d16b; /* Button color */
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    color: black;
+#logo-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 15px;
+  background-color: #e0e0e0; /* Adjust to match the background color */
+  border-radius: 8px; /* Optional: rounds the corners slightly */
+}
 
-  }
+#logo-button {
+  background-color: #f5d16b; /* Button color */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  color: black;
+}
 
-  .logout-button:hover {
-    background-color: #e2b654; /* Button hover effect */
-  }
-  .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-  }
-
-  
+#logo-button:hover {
+  background-color: #e2b654; /* Button hover effect */
+}

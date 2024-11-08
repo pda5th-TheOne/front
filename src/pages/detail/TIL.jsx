@@ -5,43 +5,32 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import './ContentsLeft.css';
 
-export default function TIL() {
+export default function TIL({ id }) {
+  // 'id'를 props로 받음
   const [TILs, setTILs] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newTIL, setNewTIL] = useState({ title: '', link: '' });
 
-  useEffect(() => {
-    // Initial TIL list setup with title and link
-    setTILs([
-      { title: '장우진의 블로그', link: 'https://example.com/장우진의블로그' },
-      {
-        title: '이민선의 학습기록',
-        link: 'https://example.com/이민선의학습기록',
-      },
-      { title: '이하늘의 블로그', link: 'https://example.com/이하늘의블로그' },
-      {
-        title: '조인후의 학습일기',
-        link: 'https://example.com/조인후의학습일기',
-      },
-      {
-        title: '멘토님의 추천 자료',
-        link: 'https://example.com/멘토님의추천자료',
-      },
-    ]);
-  }, []);
+  const accessToken = localStorage.getItem('accessToken'); // 로컬 스토리지에서 액세스 토큰 가져오기
 
-  // API 호출 예시 (commented out for now)
-  // useEffect(() => {
-  //   const fetchTILs = async () => {
-  //     try {
-  //       const response = await axios.get("/api/TILs"); // API 요청
-  //       setTILs(response.data); // 받은 데이터를 TILs 상태에 저장
-  //     } catch (error) {
-  //       console.error("Failed to fetch TILs:", error);
-  //     }
-  //   };
-  //   fetchTILs();
-  // }, []);
+  // API 호출
+  useEffect(() => {
+    const fetchTILs = async () => {
+      try {
+        const response = await axios.get(`/api/board/${id}/TILs`, {
+          // id 값 포함
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // 액세스 토큰을 헤더에 포함
+          },
+        });
+        setTILs(response.data); // 받은 데이터를 TILs 상태에 저장
+      } catch (error) {
+        console.error('Failed to fetch TILs:', error);
+      }
+    };
+
+    fetchTILs();
+  }, [accessToken, id]);
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => {
@@ -53,7 +42,15 @@ export default function TIL() {
     if (newTIL.title.trim() && newTIL.link.trim()) {
       try {
         // API로 새로운 TIL 데이터 POST 요청
-        await axios.post('/api/TILs', newTIL);
+        await axios.post(
+          `/api/board/${id}/TILs`, // 템플릿 리터럴을 사용하여 'id' 포함
+          { title: newTIL.title, link: newTIL.link },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // 액세스 토큰을 헤더에 포함
+            },
+          }
+        );
 
         // TIL 리스트 업데이트
         setTILs([...TILs, newTIL]);

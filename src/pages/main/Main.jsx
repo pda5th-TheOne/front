@@ -2,6 +2,8 @@ import Logo from '../../components/Logo';
 import Question from './Question';
 import Honey from './Honey';
 import BoardList from './BoardList';
+import BoardPlusButton from './BoardPlusButton';
+import PageButton from './PageButton';
 
 import './main.css';
 import { Col, Container } from 'react-bootstrap';
@@ -24,9 +26,8 @@ export default function Main() {
           </Row>
         </Container>
       </div>
-      <div className="board-list-content">
-        <BoardList></BoardList>
-      </div>
+      <BoardList></BoardList>
+      <BoardPlusButton></BoardPlusButton>
     </div>
   );
 }

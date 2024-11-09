@@ -1,67 +1,66 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import { Link, useNavigate } from 'react-router-dom'; // useNavigate 추가
-import './ContentsLeft.css';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Modal, Button, Form } from 'react-bootstrap';
 
-export default function Practice({ id }) {
+import './detail.css';
+
+export default function Practice() {
+  const { boardId } = useParams(); // URL에서 boardId 추출
+  const navigate = useNavigate(); // useNavigate 훅 사용
+
+  // 상태: 실습 목록, 모달 표시 여부, 새 실습 제목
   const [practices, setPractices] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newPractice, setNewPractice] = useState('');
-  const navigate = useNavigate(); // navigate 훅 사용
 
-  const accessToken = localStorage.getItem('accessToken'); // Fetch access token from local storage
+  // 액세스 토큰: 로컬스토리지에서 가져오기
+  const accessToken = localStorage.getItem('accessToken');
 
   useEffect(() => {
     const fetchPractices = async () => {
       try {
-        const response = await axios.get(`/api/board/${id}/practices`, {
+        const response = await axios.get(`/api/boards/${boardId}/practices`, {
           headers: {
-            Authorization: `Bearer ${accessToken}`, // Include access token in header
+            Authorization: `Bearer ${accessToken}`, // 액세스 토큰 포함
           },
         });
-        setPractices(Array.isArray(response.data) ? response.data : []); // Ensure data is an array
+        setPractices([...response.data]);
       } catch (error) {
         console.error('Error fetching practices:', error);
       }
     };
 
     fetchPractices();
-  }, [accessToken, id]);
+  }, [accessToken, boardId]);
 
   const handleShowModal = () => setShowModal(true);
+
   const handleCloseModal = () => {
     setShowModal(false);
-    setNewPractice(''); // Clear the input field
+    setNewPractice(''); // 입력 필드 초기화
   };
 
   const handleAddPractice = async () => {
     if (newPractice.trim()) {
       try {
-        // POST 요청을 통해 새로운 practice 생성
         const response = await axios.post(
-          `/api/board/${id}/practices`,
-          { name: newPractice },
+          `/api/boards/${boardId}/practices`,
+          newPractice,
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`, // access token 포함
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'text/plain',
             },
           }
         );
-
-        // 서버에서 받은 생성된 practice 데이터로 상태 업데이트
         const createdPractice = response.data;
-        const updatedPractices = [...practices, createdPractice];
-        setPractices(updatedPractices);
+        setPractices((prevPractices) => [...prevPractices, createdPractice]); // 새 실습 추가
 
-        // 입력 필드와 모달 초기화
         setNewPractice('');
         setShowModal(false);
 
-        // 생성된 practice 페이지로 이동
-        navigate(`/practice/${createdPractice.id}`);
+        navigate(0); // 페이지 새로 고침
       } catch (error) {
         console.error('Failed to add practice data:', error);
       }
@@ -69,36 +68,35 @@ export default function Practice({ id }) {
   };
 
   return (
-    <div className="detail-container">
-      <div className="header">
+    <div className="detail-contents-container">
+      <div className="detail-contents-header">
         <h1>실습</h1>
-        <button className="add-button" onClick={handleShowModal}>
+        <button className="detail-add-button" onClick={handleShowModal}>
           +
         </button>
       </div>
-      <div className="til-list">
+      <div className="detail-contents-list">
         {practices.map((practice, index) => (
-          <div key={index} className="til-item">
-            {/* Each practice item links to the respective practice page */}
-            <Link to={`/practice/${practice.id}`} className="practice-link">
-              {practice.name}
+          <div key={index} className="detail-contents-item">
+            <Link to={`/practices/${practice.id}`} className="practice-link">
+              {practice.title}
             </Link>
           </div>
         ))}
       </div>
 
-      {/* Modal for adding a new practice */}
+      {/* 새 실습 추가 모달 */}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Add New Practice</Modal.Title>
+          <Modal.Title>새 실습 추가</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="formPractice">
-              <Form.Label>New Practice</Form.Label>
+              <Form.Label>Title</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter new practice"
+                placeholder="새 실습 제목을 입력하세요"
                 value={newPractice}
                 onChange={(e) => setNewPractice(e.target.value)}
               />
@@ -109,7 +107,7 @@ export default function Practice({ id }) {
           <Button variant="secondary" onClick={handleCloseModal}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleAddPractice}>
+          <Button variant="warning" onClick={handleAddPractice}>
             Add
           </Button>
         </Modal.Footer>

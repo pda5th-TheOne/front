@@ -1,23 +1,38 @@
 import React, { useState } from 'react';
 import { Card, Button, Form } from 'react-bootstrap';
+import axios from 'axios';
 
-export default function Answer() {
+export default function Answer({ code: initialCode, practiceId, onRefresh }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [code, setCode] = useState(
-    `import React from 'react';
+  const [code, setCode] = useState(initialCode);
 
-export default function BoardDetailPage() {
-  return (
-    <>
-      <h1>BOARDDETAIL</h1>
-      <div>THIS IS BOARDDETAILPAGE</div>
-    </>
-  );
-}`
-  );
+  const handleSave = async () => {
+    const token = localStorage.getItem('accessToken');
+    try {
+      await axios.put(
+        `/api/practices/${practiceId}/answer`,
+        JSON.stringify(code),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      setIsEditing(false);
+      if (onRefresh) onRefresh(); // 변경사항 반영을 위해 데이터 재요청
+    } catch (error) {
+      console.error('Error updating answer:', error);
+      alert('모범답안을 저장하는 데 문제가 발생했습니다.');
+    }
+  };
 
   const handleEdit = () => {
-    setIsEditing(!isEditing);
+    if (isEditing) {
+      handleSave(); // 편집 모드 종료 시 저장
+    } else {
+      setIsEditing(true); // 편집 모드 시작
+    }
   };
 
   return (

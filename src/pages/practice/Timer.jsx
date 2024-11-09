@@ -14,7 +14,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export default function Timer({ practiceId }) {
+export default function Timer({ practiceId, onCompleteClick, isSubmitting }) {
   const [timeLeft, setTimeLeft] = useState(0); // 남은 시간 상태
   const [timerState, setTimerState] = useState('stopped'); // 타이머 상태 (running, stopped)
   const [showTimerModal, setShowTimerModal] = useState(false); // 타이머 설정 모달 표시 상태
@@ -157,7 +157,8 @@ export default function Timer({ practiceId }) {
             <Col xs="auto">
               <Button
                 variant="warning"
-                size="sm"
+                onClick={onCompleteClick} // props로 받은 함수 호출
+                disabled={isSubmitting} // 요청 중일 때 비활성화
                 className="text-white fw-bold"
               >
                 완료

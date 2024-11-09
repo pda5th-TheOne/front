@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom'; // useNavigate 훅을 사용하여 리디렉션
 import './components.css';
 
-export default function Logo() {
+export default function Logo({ text }) {
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 리디렉션
 
   const handleLogout = () => {
@@ -16,12 +16,8 @@ export default function Logo() {
   return (
     <nav id="logo-bar" className="navbar bg-body-tertiary">
       <div className="container-fluid">
-        <img
-          src="/images/main_logo.png"
-          alt="Logo"
-          width="180"
-          height="55"
-        />
+        <img src="/images/main_logo.png" alt="Logo" width="180" height="55" />
+        {text && <span className="mx-auto">{text}</span>}
         {/* 로그아웃 버튼 클릭 시 handleLogout 호출 */}
         <button
           id="logo-button"

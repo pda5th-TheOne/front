@@ -1,22 +1,30 @@
-import React, { useState } from 'react';
+
+import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { useNavigate } from 'react-router-dom';
 
-export default function EditButton() {
+export default function EditButton({ boardId }) {
   const [showModal, setShowModal] = useState(false);
   const [date, setDate] = useState(new Date());
   const [topic, setTopic] = useState('');
+  const navigate = useNavigate();
 
+  // Fetch access token from local storage
+  const accessToken = localStorage.getItem('accessToken');
+
+  // 수정 함수
   const handleEdit = (e) => {
     e.preventDefault();
-    const formattedDate = date.toISOString().split('T')[0];
+    console.log('handleEdit 함수 호출됨'); // 디버그 메시지 추가
+    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const requestBody = { createdAt: formattedDate, topic };
 
-    fetch('/api/boards/1', {
+    fetch(`/api/boards/${boardId}`, {
       method: 'PUT',
       headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_AUTH_TOKEN}`,
+        Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(requestBody),
@@ -25,6 +33,7 @@ export default function EditButton() {
         if (response.ok) {
           console.log('Board updated successfully');
           setShowModal(false);
+          navigate(0);
         } else {
           console.error('Failed to update board');
         }
@@ -34,18 +43,22 @@ export default function EditButton() {
       });
   };
 
-  const handleDelete = () => {
+  // 삭제 함수
+  const handleDelete = (e) => {
+    e.preventDefault();
+    console.log('handleDelete 함수 호출됨'); // 디버그 메시지 추가
     if (window.confirm('정말로 삭제하시겠습니까?')) {
-      fetch('/api/boards/1', {
+      fetch(`/api/boards/${boardId}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_AUTH_TOKEN}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
         .then((response) => {
           if (response.ok) {
             console.log('Board deleted successfully');
             setShowModal(false);
+            navigate(0);
           } else {
             console.error('Failed to delete board');
           }
@@ -74,12 +87,28 @@ export default function EditButton() {
 
       {/* Modal */}
       {showModal && (
-        <div className="modal fade show d-block" tabIndex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden={!showModal}>
-          <div className="modal-dialog modal-dialog-centered" role="document">
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          role="dialog"
+          aria-labelledby="modalTitle"
+          aria-hidden={!showModal}
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered"
+            role="document"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-content" style={{ width: '500px' }}>
               <div className="modal-header">
                 <h5 className="modal-title" id="modalTitle">항목 수정</h5>
-                <button type="button" className="btn-close" onClick={() => setShowModal(false)} aria-label="Close"></button>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                  aria-label="Close"
+                ></button>
               </div>
               <div className="modal-body">
                 <form onSubmit={handleEdit}>
@@ -98,9 +127,24 @@ export default function EditButton() {
                     />
                   </div>
                   <div className="modal-footer">
-                    <button type="button" className="btn btn-danger me-auto" onClick={handleDelete} style={{backgroundColor:'#F48882',fontWeight: 'bold'}}>삭제하기</button>
-                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>취소</button>
-                    <button type="submit" className="btn btn-primary"  style={{backgroundColor:'#FFD60A', color: '#614416',fontWeight: 'bold'}}>수정하기</button>
+                    <button
+                      type="button"
+                      className="btn btn-danger me-auto"
+                      onClick={(e) => handleDelete(e)}
+                      style={{ backgroundColor: '#F48882', fontWeight: 'bold' }}
+                    >
+                      삭제하기
+                    </button>
+                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                      취소
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ backgroundColor: '#FFD60A', color: '#614416', fontWeight: 'bold' }}
+                    >
+                      수정하기
+                    </button>
                   </div>
                 </form>
               </div>

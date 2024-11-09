@@ -28,12 +28,11 @@ const AppRouter = createBrowserRouter([
     index: true,
   },
   {
-    path: '/detail',
+    path: '/detail/:boardId', // boardId가 URL을 통해 전달되게 수정
     element: <Detail />,
-    index: true,
   },
   {
-    path: '/practice/:id',
+    path: '/practices/:id',
     element: <Practice />,
     index: true,
   },

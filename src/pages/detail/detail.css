@@ -1,4 +1,4 @@
-.detail-container {
+.detail-contents-container {
   margin: 20px auto;
   background-color: white;
   border-radius: 8px;
@@ -6,19 +6,14 @@
   padding: 20px;
 }
 
-.header {
+.detail-contents-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-/* Reduce h1 font size */
-.header h1 {
-  font-size: 1.5rem; /* Adjust font size as needed */
-}
-
-.add-button {
+.detail-add-button {
   background-color: #fed45b;
   border: none;
   color: black;
@@ -33,16 +28,16 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.add-button:hover {
+.detail-add-button:hover {
   background-color: #ffe586;
 }
 
-.til-list {
+.detail-contents-list {
   max-height: 30vh;
   overflow-y: auto;
 }
 
-.til-item {
+.detail-contents-item {
   background-color: #fff9e6;
   padding: 10px;
   margin-bottom: 10px;
@@ -50,6 +45,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.til-item:hover {
+.detail-contents-item:hover {
   background-color: #fff5d6;
 }

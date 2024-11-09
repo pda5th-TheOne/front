@@ -36,7 +36,7 @@ export default function Main({ practiceId }) {
   return (
     <div className="min-vh-100 bg-light">
       <header className="border-bottom">
-        <Logo />
+        <Logo text={practiceData.title} />
       </header>
       <main>
         <Container className="py-4">

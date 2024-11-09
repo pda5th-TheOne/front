@@ -3,14 +3,17 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function BoardPlusButton() {
   const [showModal, setShowModal] = useState(false);
   const [date, setDate] = useState(new Date());
   const [topic, setTopic] = useState('');
+  const navigate = useNavigate();
 
   // API instance with JWT interceptor
   const api = axios.create({ baseURL: '/api' });
+  
   api.interceptors.request.use((config) => {
     const token = localStorage.getItem('accessToken');
     if (token) {
@@ -21,14 +24,18 @@ export default function BoardPlusButton() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formattedDate = date.toISOString().split('T')[0];
+  
+    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const requestBody = { createdAt: formattedDate, topic };
+  
     try {
       const response = await api.post('/boards', requestBody);
       if (response.status === 201) {
         console.log('Board created successfully');
         setShowModal(false);
         setTopic('');
+        // Navigate to the current page to refresh
+        navigate(0);
       } else {
         console.error('Failed to create board');
       }
@@ -68,7 +75,7 @@ export default function BoardPlusButton() {
                   </div>
                   <div className="modal-footer">
                     <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}  >취소</button>
-                    <button type="submit" className="btn btn-primary"  style={{backgroundColor:'#FFD60A', color: '#614416',fontWeight: 'bold'}}>추가하기</button>
+                    <button type="submit" className="btn btn-primary" style={{backgroundColor:'#FFD60A', color: '#614416',fontWeight: 'bold'}}>추가하기</button>
                   </div>
                 </form>
               </div>

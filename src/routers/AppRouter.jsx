@@ -33,7 +33,7 @@ const AppRouter = createBrowserRouter([
     index: true,
   },
   {
-    path: '/practice',
+    path: '/practice/:id',
     element: <Practice />,
     index: true,
   },

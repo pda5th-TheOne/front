@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { useNavigate } from 'react-router-dom';
 
-export default function EditButton({ boardId }) {
+export default function EditButton({ boardId, onClick }) {
   const [showModal, setShowModal] = useState(false);
   const [date, setDate] = useState(new Date());
   const [topic, setTopic] = useState('');
@@ -17,7 +16,7 @@ export default function EditButton({ boardId }) {
   // 수정 함수
   const handleEdit = (e) => {
     e.preventDefault();
-    console.log('handleEdit 함수 호출됨'); // 디버그 메시지 추가
+    console.log('handleEdit 함수 호출됨');
     const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const requestBody = { createdAt: formattedDate, topic };
 
@@ -46,7 +45,7 @@ export default function EditButton({ boardId }) {
   // 삭제 함수
   const handleDelete = (e) => {
     e.preventDefault();
-    console.log('handleDelete 함수 호출됨'); // 디버그 메시지 추가
+    console.log('handleDelete 함수 호출됨');
     if (window.confirm('정말로 삭제하시겠습니까?')) {
       fetch(`/api/boards/${boardId}`, {
         method: 'DELETE',
@@ -80,7 +79,10 @@ export default function EditButton({ boardId }) {
           padding: '6px 16px',
           borderRadius: '4px',
         }}
-        onClick={() => setShowModal(true)}
+        onClick={(e) => {
+          onClick(e); // 이벤트 버블링 방지
+          setShowModal(true);
+        }}
       >
         편집
       </button>

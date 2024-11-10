@@ -12,6 +12,8 @@ export default function Question() {
   const [newQuestion, setNewQuestion] = useState('');
   const [newReplies, setNewReplies] = useState('');
   const [activeQuestion, setActiveQuestion] = useState(null);
+  const [editingQuestion, setEditingQuestion] = useState(null); // 수정 중인 질문 ID
+  const [editedQuestionContent, setEditedQuestionContent] = useState(''); // 수정된 질문 내용
   const [editingReplyId, setEditingReplyId] = useState(null); // 현재 수정 중인 답글 ID
   const [editingContent, setEditingContent] = useState(''); // 수정 중인 답글 내용
 
@@ -155,6 +157,58 @@ export default function Question() {
     setActiveQuestion(questionIndex);
   };
 
+  // 질문 수정 함수
+  const handleEditQuestion = async (questionId, content) => {
+    try {
+      await axios.put(
+        `/api/questions/${questionId}`,
+        content,
+        {
+          headers: {
+            'Content-Type': 'text/plain',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error('Error editing question:', error);
+    }
+  };
+
+  // 질문 수정 제출 핸들러
+  const handleQuestionUpdateSubmit = async (e, questionId) => {
+    e.preventDefault();
+    if (editedQuestionContent.trim() !== '') {
+      try {
+        // 서버에 수정된 질문 전송
+        await handleEditQuestion(questionId, editedQuestionContent);
+
+        // 서버에서 최신 질문 목록 가져오기
+        const updatedQuestions = questions.map((question) =>
+          question.id === questionId
+            ? { ...question, content: editedQuestionContent }
+            : question
+        );
+
+        setQuestions(updatedQuestions);
+        setEditingQuestion(null); // 수정 모드 종료
+        setEditedQuestionContent(''); // 입력 필드 초기화
+      } catch (error) {
+        console.error('Error updating question:', error);
+      }
+    }
+  };
+  
+  const handleQuestionEditClick = (question) => {
+    setEditingQuestion(question.id);
+    setEditedQuestionContent(question.content);
+  };
+
+  const handleQuestionCancelEdit = () => {
+    setEditingQuestion(null);
+    setEditedQuestionContent('');
+  };
+
 
   // 질문 삭제 함수 (본인이 등록한 것만 삭제 가능: accessToken의 userId로 검사함 Back 단에서)
   const handleDeleteQuestion = async (questionId) => {
@@ -257,30 +311,66 @@ export default function Question() {
       {questions.map((question, questionIndex) => (
         <div key={questionIndex} className="mb-4">
           <Card className="mb-3">
-            <Card.Body>
-              <Card.Text>{question.content}</Card.Text>
-
-              <div className="d-flex justify-content-end">
-                {/* 질문-답변 버튼 추가 */}
-                <Button
-                  variant="warning"
-                  size="sm"
-                  style={{ fontSize: '0.875rem' }}
-                  onClick={() => handleReplyClick(questionIndex)}
+          <Card.Body>
+              {/* 수정 모드일 때와 아닐 때를 구분하여 렌더링 */}
+              {/* 수정 모드 */}
+              {editingQuestion === question.id ? (
+                <Form
+                  onSubmit={(e) => handleQuestionUpdateSubmit(e, question.id)}
                 >
-                  답변
-                </Button>
+                  <Form.Control
+                    type="text"
+                    value={editedQuestionContent}
+                    onChange={(e) => setEditedQuestionContent(e.target.value)}
+                  />
+                  <div className="d-flex justify-content-end mt-2">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={handleQuestionCancelEdit}
+                    >
+                      취소
+                    </Button>
+                    <Button type="submit" variant="success" size="sm" className="ms-2" onClick={()=>{navigate(0)}}>
+                      수정완료
+                    </Button>
+                  </div>
+                </Form>
+              ) : (
+                <>
+                  {/* 수정모드 아닌경우 */}
+                  <Card.Text>{question.content}</Card.Text>
 
-                {/* 질문-삭제 버튼 추가 */}
-                <Button
-                  variant="danger"
-                  size="sm"
-                  className="ms-2"
-                  onClick={() => handleDeleteQuestion(question.id)} // 삭제 버튼 클릭 시 질문 삭제
-                >
-                  삭제
-                </Button>
-              </div>
+                  <div className="d-flex justify-content-end">
+                    <Button
+                      variant="warning"
+                      size="sm"
+                      style={{ fontSize: '0.875rem' }}
+                      onClick={() => handleReplyClick(questionIndex)}
+                    >
+                      답변
+                    </Button>
+
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="ms-2"
+                      onClick={() => handleQuestionEditClick(question)}
+                    >
+                      수정
+                    </Button>
+
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      className="ms-2"
+                      onClick={() => handleDeleteQuestion(question.id)}
+                    >
+                      삭제
+                    </Button>
+                  </div>
+                </>
+              )}
             </Card.Body>
           </Card>
 

@@ -12,6 +12,8 @@ export default function Question() {
   const [newQuestion, setNewQuestion] = useState('');
   const [newReplies, setNewReplies] = useState('');
   const [activeQuestion, setActiveQuestion] = useState(null);
+  const [editingReplyId, setEditingReplyId] = useState(null); // 현재 수정 중인 답글 ID
+  const [editingContent, setEditingContent] = useState(''); // 수정 중인 답글 내용
 
   const accessToken = localStorage.getItem('accessToken'); // Fetch access token from local storage
 
@@ -176,6 +178,49 @@ export default function Question() {
     }
   };
 
+  // 답글 수정 함수
+  const updateReply = async (replyId, updatedContent) => {
+    try {
+      await axios.put(
+        `/api/replies/${replyId}`,
+        updatedContent,
+        {
+          headers: {
+            'Content-Type': 'text/plain',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      // 상태 업데이트
+      setReplies((prevReplies) => {
+        const updatedReplies = { ...prevReplies };
+        for (const questionId in updatedReplies) {
+          if (updatedReplies[questionId][replyId]) {
+            updatedReplies[questionId][replyId].content = updatedContent;
+          }
+        }
+        return updatedReplies;
+      });
+
+      setEditingReplyId(null); // 수정 모드 종료
+    } catch (error) {
+      console.error('Error updating reply:', error);
+    }
+  };
+
+  // 답글 수정 핸들러
+  const handleEditClick = (replyId, currentContent) => {
+    setEditingReplyId(replyId);
+    setEditingContent(currentContent);
+  };
+
+  // 답글 수정 취소 핸들러
+  const cancelEdit = () => {
+    setEditingReplyId(null);
+    setEditingContent('');
+  };
+
   // 답글 삭제 함수 (본인이 등록한 것만 삭제 가능: accessToken의 userId로 검사함 Back 단에서)
   const deleteReply = async (questionId, replyId) => {
     // 삭제 확인 alert
@@ -216,44 +261,79 @@ export default function Question() {
               <Card.Text>{question.content}</Card.Text>
 
               {/* 질문-삭제 버튼 추가 */}
-              <Button
-                variant="danger"
-                size="sm"
-                className="float-end"
-                onClick={() => handleDeleteQuestion(question.id)} // 삭제 버튼 클릭 시 질문 삭제
-              >
-                삭제
-              </Button>
-
-              {/* 질문-답변 버튼 추가 */}
-              <Button
-                variant="warning"
-                size="sm"
-                className="float-end"
-                style={{ fontSize: '0.875rem' }}
-                onClick={() => handleReplyClick(questionIndex)}
-              >
-                답변
-              </Button>
+              <div className="d-flex justify-content-end">
+                {/* 질문-답변 버튼 추가 */}
+                <Button
+                  variant="warning"
+                  size="sm"
+                  style={{ fontSize: '0.875rem' }}
+                  onClick={() => handleReplyClick(questionIndex)}
+                >
+                  답변
+                </Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  className="ms-2"
+                  onClick={() => handleDeleteQuestion(question.id)} // 삭제 버튼 클릭 시 질문 삭제
+                >
+                  삭제
+                </Button>
+              </div>
             </Card.Body>
           </Card>
 
-          {/* 답변에 대한 카드 */}
+          {/* Render replies for each question */}
           {replies[question.id] &&
             Object.values(replies[question.id]).map((reply) => (
               <Card key={reply.id} className="mb-2 ms-4">
                 <Card.Body>
-                  <Card.Text>{reply.content}</Card.Text>
-
-                  {/* 답글 삭제 버튼 추가 */}
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    className="float-end"
-                    onClick={() => deleteReply(question.id, reply.id)} // 답글 삭제 시 replyId 사용
-                  >
-                    삭제
-                  </Button>
+                  {editingReplyId === reply.id ? (
+                    <>
+                      <Form.Control
+                        type="text"
+                        value={editingContent}
+                        onChange={(e) => setEditingContent(e.target.value)}
+                      />
+                      <Button
+                        variant="success"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => updateReply(reply.id, editingContent)}
+                      >
+                        수정 완료
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="mt-2 ms-2"
+                        onClick={cancelEdit}
+                      >
+                        취소
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Card.Text>{reply.content}</Card.Text>
+                        <div className="d-flex justify-content-end">
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            onClick={() => handleEditClick(reply.id, reply.content)}
+                          >
+                            수정
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            className="ms-2"
+                            onClick={() => deleteReply(question.id, reply.id)}
+                          >
+                            삭제
+                          </Button>
+                        </div>
+                    </>
+                  )}
                 </Card.Body>
               </Card>
             ))}

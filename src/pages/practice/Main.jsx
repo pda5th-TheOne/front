@@ -14,10 +14,15 @@ export default function Main({ practiceId }) {
   const fetchPracticeData = async () => {
     const token = localStorage.getItem('accessToken');
     try {
-      const response = await axios.get(`/api/practices/${practiceId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setPracticeData(response.data);
+      if (!token) {
+        // 인증되지 않았을 경우 로그인 페이지로 리디렉션
+        navigate('/');
+      } else {
+        const response = await axios.get(`/api/practices/${practiceId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPracticeData(response.data);
+      }
     } catch (error) {
       console.error('Error fetching practice data:', error);
       alert('해당하는 실습이 없습니다!');

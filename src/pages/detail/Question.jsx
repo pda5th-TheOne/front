@@ -8,9 +8,9 @@ export default function Question() {
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState({});
+  const [replies, setReplies] = useState({});
   const [newQuestion, setNewQuestion] = useState('');
-  const [newAnswer, setNewAnswer] = useState('');
+  const [newReplies, setNewReplies] = useState('');
   const [activeQuestion, setActiveQuestion] = useState(null);
 
   const accessToken = localStorage.getItem('accessToken'); // Fetch access token from local storage
@@ -23,9 +23,28 @@ export default function Question() {
             Authorization: `Bearer ${accessToken}`, // Include access token in header
           },
         });
-        console.log(response);
+
         setQuestions(Array.isArray(response.data) ? response.data : []); // Ensure data is an array
 
+        // 질문 당 답변까지 가져오기
+        const questionsData = Array.isArray(response.data) ? response.data : [];
+        setQuestions(questionsData);
+
+        // Fetch replies for each question
+        const repliesData = {};
+        for (const [index, question] of questionsData.entries()) {
+          const repliesResponse = await axios.get(`/api/questions/${question.id}/replies`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // Include access token in header
+            },
+          });
+
+          repliesData[index] = Array.isArray(repliesResponse.data)
+            ? repliesResponse.data.map(reply => reply.content)
+            : [];
+        }
+
+        setReplies(repliesData); // Store the replies
       } catch (error) {
         console.error('Error fetching questions:', error);
       }
@@ -65,17 +84,66 @@ export default function Question() {
     }
   };
 
-  const handleAnswerSubmit = (e, questionIndex) => {
-    e.preventDefault();
-    if (newAnswer.trim() !== '') {
-      const updatedAnswers = { ...answers };
-      if (!updatedAnswers[questionIndex]) updatedAnswers[questionIndex] = [];
-      updatedAnswers[questionIndex].push(newAnswer);
-      setAnswers(updatedAnswers);
-      setNewAnswer('');
+  // 답변을 서버에 전송하는 함수 (POST 요청)
+const postReply = async (questionId, content) => {
+  try {
+    await axios.post(
+      `/api/questions/${questionId}/replies`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'text/plain',
+          Authorization: `Bearer ${accessToken}`, // 인증 토큰 포함
+        },
+      }
+    );
+  } catch (error) {
+    console.error('Error adding reply:', error);
+    throw error;
+  }
+};
+
+// 서버에서 특정 질문의 답변 목록을 가져오는 함수 (GET 요청)
+const fetchReplies = async (questionId) => {
+  try {
+    const response = await axios.get(`/api/questions/${questionId}/replies`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`, // 인증 토큰 포함
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching replies:', error);
+    throw error;
+  }
+};
+
+// 답변 제출 핸들러 함수
+const handleRepliesSubmit = async (e, questionIndex) => {
+  e.preventDefault();
+  if (newReplies.trim() !== '') {
+    try {
+      // 1. 답변을 서버에 전송
+      await postReply(questions[questionIndex].id, newReplies);
+
+      // 2. 서버에서 최신 답변 목록 가져오기
+      const fetchedReplies = await fetchReplies(questions[questionIndex].id);
+
+      // 3. 상태 업데이트
+      const updatedReplies = { ...replies };
+      updatedReplies[questionIndex] = Array.isArray(fetchedReplies) ? fetchedReplies.map(reply => reply.content) : [];
+      setReplies(updatedReplies);
+
+      // 입력 필드 초기화 및 답변 입력창 닫기
+      setNewReplies('');
       setActiveQuestion(null);
+    } catch (error) {
+      console.error('Error handling replies submission:', error);
     }
-  };
+  }
+};
+
+  
 
   const handleReplyClick = (questionIndex) => {
     setActiveQuestion(questionIndex);
@@ -102,8 +170,8 @@ export default function Question() {
             </Card.Body>
           </Card>
 
-          {/* Render answers for each question */}
-          {answers[questionIndex]?.map((answer, index) => (
+          {/* Render replies for each question */}
+          {replies[questionIndex]?.map((answer, index) => (
             <Card key={index} className="mb-2 ms-4">
               <Card.Body>
                 <Card.Text>{answer}</Card.Text>
@@ -114,7 +182,7 @@ export default function Question() {
           {/* Show answer input field only for active question */}
           {activeQuestion === questionIndex && (
             <Form
-              onSubmit={(e) => handleAnswerSubmit(e, questionIndex)}
+              onSubmit={(e) => handleRepliesSubmit(e, questionIndex)}
               className="mt-4"
             >
               <Form.Group>
@@ -122,8 +190,8 @@ export default function Question() {
                 <div className="d-flex">
                   <Form.Control
                     type="text"
-                    value={newAnswer}
-                    onChange={(e) => setNewAnswer(e.target.value)}
+                    value={newReplies}
+                    onChange={(e) => setNewReplies(e.target.value)}
                     placeholder="답변을 입력하세요"
                   />
                   <Button type="submit" variant="dark" className="ms-2">

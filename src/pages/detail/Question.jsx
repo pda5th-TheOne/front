@@ -157,12 +157,18 @@ export default function Question() {
     setActiveQuestion(questionIndex);
   };
 
-  // 질문 수정 함수
-  const handleEditQuestion = async (questionId, content) => {
+  // 질문 수정 및 업데이트 함수
+  const updateQuestion = async (questionId, editedContent) => {
+    if (editedContent.trim() === '') {
+      alert('질문 내용을 입력해주세요.');
+      return;
+    }
+
     try {
-      await axios.put(
+      // 서버에 수정된 질문 전송
+      const response = await axios.put(
         `/api/questions/${questionId}`,
-        content,
+        editedContent,
         {
           headers: {
             'Content-Type': 'text/plain',
@@ -170,34 +176,29 @@ export default function Question() {
           },
         }
       );
-    } catch (error) {
-      console.error('Error editing question:', error);
-    }
-  };
 
-  // 질문 수정 제출 핸들러
-  const handleQuestionUpdateSubmit = async (e, questionId) => {
-    e.preventDefault();
-    if (editedQuestionContent.trim() !== '') {
-      try {
-        // 서버에 수정된 질문 전송
-        await handleEditQuestion(questionId, editedQuestionContent);
-
-        // 서버에서 최신 질문 목록 가져오기
-        const updatedQuestions = questions.map((question) =>
-          question.id === questionId
-            ? { ...question, content: editedQuestionContent }
-            : question
-        );
-
-        setQuestions(updatedQuestions);
-        setEditingQuestion(null); // 수정 모드 종료
-        setEditedQuestionContent(''); // 입력 필드 초기화
-      } catch (error) {
-        console.error('Error updating question:', error);
+      // 응답 상태 코드가 2xx 범위가 아닌 경우 예외 처리
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`Failed to edit question: ${response.statusText}`);
       }
+
+      // 질문 목록 업데이트
+      const updatedQuestions = questions.map((question) =>
+        question.id === questionId
+          ? { ...question, content: editedContent }
+          : question
+      );
+
+      setQuestions(updatedQuestions);
+      setEditingQuestion(null); // 수정 모드 종료
+      setEditedQuestionContent(''); // 입력 필드 초기화
+    } catch (error) {
+      console.error('Error updating question:', error);
+      alert('질문 수정 권한 없음');
+      navigate(0);
     }
   };
+
   
   const handleQuestionEditClick = (question) => {
     setEditingQuestion(question.id);
@@ -259,6 +260,8 @@ export default function Question() {
 
       setEditingReplyId(null); // 수정 모드 종료
     } catch (error) {
+      alert("댓글 수정 권한 없음");
+      navigate(0);
       console.error('Error updating reply:', error);
     }
   };
@@ -315,9 +318,7 @@ export default function Question() {
               {/* 수정 모드일 때와 아닐 때를 구분하여 렌더링 */}
               {/* 수정 모드 */}
               {editingQuestion === question.id ? (
-                <Form
-                  onSubmit={(e) => handleQuestionUpdateSubmit(e, question.id)}
-                >
+                <>
                   <Form.Control
                     type="text"
                     value={editedQuestionContent}
@@ -331,11 +332,11 @@ export default function Question() {
                     >
                       취소
                     </Button>
-                    <Button type="submit" variant="success" size="sm" className="ms-2" onClick={()=>{navigate(0)}}>
+                    <Button type="submit" variant="success" size="sm" className="ms-2" onClick={()=>updateQuestion(question.id, editedQuestionContent)}>
                       수정완료
                     </Button>
                   </div>
-                </Form>
+                </>
               ) : (
                 <>
                   {/* 수정모드 아닌경우 */}

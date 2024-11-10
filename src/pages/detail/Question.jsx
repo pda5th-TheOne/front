@@ -386,22 +386,24 @@ export default function Question() {
                         value={editingContent}
                         onChange={(e) => setEditingContent(e.target.value)}
                       />
-                      <Button
-                        variant="success"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => updateReply(reply.id, editingContent)}
-                      >
-                        수정 완료
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="mt-2 ms-2"
-                        onClick={cancelReplyEdit}
-                      >
-                        취소
-                      </Button>
+                       <div className="d-flex justify-content-end mt-2">
+                       <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={cancelReplyEdit}
+                        >
+                          취소
+                        </Button>
+                        
+                        <Button
+                          variant="success"
+                          size="sm"
+                          className="ms-2"
+                          onClick={() => updateReply(reply.id, editingContent)}
+                        >
+                          수정 완료
+                        </Button>
+                      </div>
                     </>
                   ) : (
                     <>

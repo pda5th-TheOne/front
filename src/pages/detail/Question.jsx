@@ -56,8 +56,9 @@ export default function Question() {
         setQuestions([...questions, response.data]); // Update state with new question
         setNewQuestion(''); // Clear input field
 
+        // post method 완료 후 새로고침
         navigate(0);
-        
+
       } catch (error) {
         console.error('Error adding question:', error);
       }

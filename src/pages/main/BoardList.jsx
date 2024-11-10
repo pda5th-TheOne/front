@@ -42,7 +42,7 @@ export default function BoardList() {
       <Row className="g-1 justify-content-center">
         {boardData.map((board, index) => (
           <Col key={index} xs={12} md={5} lg={4} className="p-0">
-            <Board board={board.dailyBoard} />
+            <Board boardData={board} />
           </Col>
         ))}
       </Row>

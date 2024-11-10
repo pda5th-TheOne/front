@@ -210,13 +210,13 @@ export default function Question() {
   };
 
   // 답글 수정 핸들러
-  const handleEditClick = (replyId, currentContent) => {
+  const handleReplyEditClick = (replyId, currentContent) => {
     setEditingReplyId(replyId);
     setEditingContent(currentContent);
   };
 
   // 답글 수정 취소 핸들러
-  const cancelEdit = () => {
+  const cancelReplyEdit = () => {
     setEditingReplyId(null);
     setEditingContent('');
   };
@@ -260,7 +260,6 @@ export default function Question() {
             <Card.Body>
               <Card.Text>{question.content}</Card.Text>
 
-              {/* 질문-삭제 버튼 추가 */}
               <div className="d-flex justify-content-end">
                 {/* 질문-답변 버튼 추가 */}
                 <Button
@@ -271,6 +270,8 @@ export default function Question() {
                 >
                   답변
                 </Button>
+
+                {/* 질문-삭제 버튼 추가 */}
                 <Button
                   variant="danger"
                   size="sm"
@@ -307,7 +308,7 @@ export default function Question() {
                         variant="secondary"
                         size="sm"
                         className="mt-2 ms-2"
-                        onClick={cancelEdit}
+                        onClick={cancelReplyEdit}
                       >
                         취소
                       </Button>
@@ -319,7 +320,7 @@ export default function Question() {
                           <Button
                             variant="primary"
                             size="sm"
-                            onClick={() => handleEditClick(reply.id, reply.content)}
+                            onClick={() => handleReplyEditClick(reply.id, reply.content)}
                           >
                             수정
                           </Button>

@@ -199,12 +199,13 @@ export default function Question() {
     }
   };
 
-  
+  // 질문 수정 버튼 핸들링
   const handleQuestionEditClick = (question) => {
     setEditingQuestion(question.id);
     setEditedQuestionContent(question.content);
   };
 
+  // 질문 취소 버튼 핸들링
   const handleQuestionCancelEdit = () => {
     setEditingQuestion(null);
     setEditedQuestionContent('');

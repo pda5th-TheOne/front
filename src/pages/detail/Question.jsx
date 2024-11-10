@@ -85,38 +85,38 @@ export default function Question() {
   };
 
   // 답변을 서버에 전송하는 함수 (POST 요청)
-const postReply = async (questionId, content) => {
-  try {
-    await axios.post(
-      `/api/questions/${questionId}/replies`,
-      content,
-      {
+  const postReply = async (questionId, content) => {
+    try {
+      await axios.post(
+        `/api/questions/${questionId}/replies`,
+        content,
+        {
+          headers: {
+            'Content-Type': 'text/plain',
+            Authorization: `Bearer ${accessToken}`, // 인증 토큰 포함
+          },
+        }
+      );
+    } catch (error) {
+      console.error('Error adding reply:', error);
+      throw error;
+    }
+  };
+
+  // 서버에서 특정 질문의 답변 목록을 가져오는 함수 (GET 요청)
+  const fetchReplies = async (questionId) => {
+    try {
+      const response = await axios.get(`/api/questions/${questionId}/replies`, {
         headers: {
-          'Content-Type': 'text/plain',
           Authorization: `Bearer ${accessToken}`, // 인증 토큰 포함
         },
-      }
-    );
-  } catch (error) {
-    console.error('Error adding reply:', error);
-    throw error;
-  }
-};
-
-// 서버에서 특정 질문의 답변 목록을 가져오는 함수 (GET 요청)
-const fetchReplies = async (questionId) => {
-  try {
-    const response = await axios.get(`/api/questions/${questionId}/replies`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`, // 인증 토큰 포함
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching replies:', error);
-    throw error;
-  }
-};
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching replies:', error);
+      throw error;
+    }
+  };
 
 // 답변 제출 핸들러 함수
 const handleRepliesSubmit = async (e, questionIndex) => {
@@ -142,8 +142,6 @@ const handleRepliesSubmit = async (e, questionIndex) => {
     }
   }
 };
-
-  
 
   const handleReplyClick = (questionIndex) => {
     setActiveQuestion(questionIndex);

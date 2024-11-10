@@ -118,30 +118,30 @@ export default function Question() {
     }
   };
 
-// 답변 제출 핸들러 함수
-const handleRepliesSubmit = async (e, questionIndex) => {
-  e.preventDefault();
-  if (newReplies.trim() !== '') {
-    try {
-      // 1. 답변을 서버에 전송
-      await postReply(questions[questionIndex].id, newReplies);
+  // 답변 제출 핸들러 함수
+  const handleRepliesSubmit = async (e, questionIndex) => {
+    e.preventDefault();
+    if (newReplies.trim() !== '') {
+      try {
+        // 1. 답변을 서버에 전송
+        await postReply(questions[questionIndex].id, newReplies);
 
-      // 2. 서버에서 최신 답변 목록 가져오기
-      const fetchedReplies = await fetchReplies(questions[questionIndex].id);
+        // 2. 서버에서 최신 답변 목록 가져오기
+        const fetchedReplies = await fetchReplies(questions[questionIndex].id);
 
-      // 3. 상태 업데이트
-      const updatedReplies = { ...replies };
-      updatedReplies[questionIndex] = Array.isArray(fetchedReplies) ? fetchedReplies.map(reply => reply.content) : [];
-      setReplies(updatedReplies);
+        // 3. 상태 업데이트
+        const updatedReplies = { ...replies };
+        updatedReplies[questionIndex] = Array.isArray(fetchedReplies) ? fetchedReplies.map(reply => reply.content) : [];
+        setReplies(updatedReplies);
 
-      // 입력 필드 초기화 및 답변 입력창 닫기
-      setNewReplies('');
-      setActiveQuestion(null);
-    } catch (error) {
-      console.error('Error handling replies submission:', error);
+        // 입력 필드 초기화 및 답변 입력창 닫기
+        setNewReplies('');
+        setActiveQuestion(null);
+      } catch (error) {
+        console.error('Error handling replies submission:', error);
+      }
     }
-  }
-};
+  };
 
   const handleReplyClick = (questionIndex) => {
     setActiveQuestion(questionIndex);

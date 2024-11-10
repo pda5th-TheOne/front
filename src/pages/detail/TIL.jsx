@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import './ContentsLeft.css';
+import './detail.css';
 
-export default function TIL({ id }) {
-  // 'id'를 props로 받음
+export default function TIL() {
+  const { boardId } = useParams(); // URL에서 boardId 추출
+
   const [TILs, setTILs] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newTIL, setNewTIL] = useState({ title: '', link: '' });
@@ -17,20 +19,19 @@ export default function TIL({ id }) {
   useEffect(() => {
     const fetchTILs = async () => {
       try {
-        const response = await axios.get(`/api/board/${id}/TILs`, {
-          // id 값 포함
+        const response = await axios.get(`/api/boards/${boardId}/TILs`, {
           headers: {
             Authorization: `Bearer ${accessToken}`, // 액세스 토큰을 헤더에 포함
           },
         });
-        setTILs(response.data); // 받은 데이터를 TILs 상태에 저장
+        setTILs([...response.data]); // 받은 데이터를 TILs 상태에 저장
       } catch (error) {
         console.error('Failed to fetch TILs:', error);
       }
     };
 
     fetchTILs();
-  }, [accessToken, id]);
+  }, [accessToken, boardId]);
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => {
@@ -43,7 +44,7 @@ export default function TIL({ id }) {
       try {
         // API로 새로운 TIL 데이터 POST 요청
         await axios.post(
-          `/api/board/${id}/TILs`, // 템플릿 리터럴을 사용하여 'id' 포함
+          `/api/boards/${boardId}/TILs`,
           { title: newTIL.title, link: newTIL.link },
           {
             headers: {
@@ -65,16 +66,16 @@ export default function TIL({ id }) {
   };
 
   return (
-    <div className="detail-container">
-      <div className="header">
+    <div className="detail-contents-container">
+      <div className="detail-contents-header">
         <h1>TIL</h1>
-        <button className="add-button" onClick={handleShowModal}>
+        <button className="detail-add-button" onClick={handleShowModal}>
           +
         </button>
       </div>
-      <div className="til-list">
+      <div className="detail-contents-list">
         {TILs.map((til, index) => (
-          <div key={index} className="til-item">
+          <div key={index} className="detail-contents-item">
             <a href={til.link} target="_blank" rel="noopener noreferrer">
               {til.title}
             </a>
@@ -85,7 +86,7 @@ export default function TIL({ id }) {
       {/* 모달창 */}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Add New TIL</Modal.Title>
+          <Modal.Title>새 TIL 추가</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -93,7 +94,7 @@ export default function TIL({ id }) {
               <Form.Label>Title</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter title"
+                placeholder="제목을 입력하세요"
                 value={newTIL.title}
                 onChange={(e) =>
                   setNewTIL({ ...newTIL, title: e.target.value })
@@ -116,7 +117,7 @@ export default function TIL({ id }) {
           <Button variant="secondary" onClick={handleCloseModal}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleAddTIL}>
+          <Button variant="warning" onClick={handleAddTIL}>
             Add
           </Button>
         </Modal.Footer>

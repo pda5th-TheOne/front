@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Card, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 
-export default function Question({ id }) {
+export default function Question() {
+  const { boardId } = useParams(); // URL에서 boardId 추출
+  const navigate = useNavigate(); // useNavigate 훅 사용
+
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [newQuestion, setNewQuestion] = useState('');
@@ -14,36 +18,46 @@ export default function Question({ id }) {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get(`/api/board/${id}/questions`, {
+        const response = await axios.get(`/api/boards/${boardId}/questions`, {
           headers: {
             Authorization: `Bearer ${accessToken}`, // Include access token in header
           },
         });
+        console.log(response);
         setQuestions(Array.isArray(response.data) ? response.data : []); // Ensure data is an array
+
       } catch (error) {
         console.error('Error fetching questions:', error);
       }
     };
 
-    fetchQuestions();
-  }, [accessToken, id]);
+    if (boardId) {
+      fetchQuestions();
+    }
+  }, [accessToken, boardId]);
+
 
   // Submit a new question to the API
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     if (newQuestion.trim() !== '') {
       try {
+        // 새로운 질문을 문자열 형태로 전송
         const response = await axios.post(
-          `/api/board/${id}/questions`,
-          { question: newQuestion },
+          `/api/boards/${boardId}/questions`,
+          newQuestion, // 단순 문자열 전송
           {
             headers: {
+              'Content-Type': 'text/plain', // 문자열로 전송하도록 설정
               Authorization: `Bearer ${accessToken}`, // Include access token in header
             },
           }
         );
         setQuestions([...questions, response.data]); // Update state with new question
         setNewQuestion(''); // Clear input field
+
+        navigate(0);
+        
       } catch (error) {
         console.error('Error adding question:', error);
       }
@@ -74,7 +88,7 @@ export default function Question({ id }) {
         <div key={questionIndex} className="mb-4">
           <Card className="mb-3">
             <Card.Body>
-              <Card.Text>{question}</Card.Text>
+              <Card.Text>{question.content}</Card.Text>
               <Button
                 variant="warning"
                 size="sm"

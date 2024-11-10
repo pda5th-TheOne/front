@@ -4,6 +4,10 @@ import { Card, Container } from 'react-bootstrap';
 import EditButton from './EditButton';
 
 export default function Board({ board }) {
+  if (!board) {
+    return <p>데이터를 불러오는 중입니다...</p>;
+  }
+
   return (
     <Container
       className="py-4"
@@ -36,7 +40,7 @@ export default function Board({ board }) {
             </h2>
             <Card className="h-100 rounded" style={{ minHeight: '200px' }}>
               <Card.Body>
-                {board.practices.map((practice, index) => (
+                {(board.practices || []).map((practice, index) => (
                   <div key={index} className="mb-3">
                     <h4 className="h6">{practice.title}</h4>
                     <p className="mb-1 text-muted small">
@@ -55,7 +59,7 @@ export default function Board({ board }) {
             </h2>
             <Card className="h-100 rounded" style={{ minHeight: '200px' }}>
               <Card.Body>
-                {board.tils.map((til, index) => (
+                {(board.tils || []).map((til, index) => (
                   <div key={index} className="mb-2">
                     <h4 className="h6">{til.title}</h4>
                     <a href={til.link} className="text-decoration-none">
@@ -73,7 +77,7 @@ export default function Board({ board }) {
             </h2>
             <Card className="h-100 rounded" style={{ minHeight: '200px' }}>
               <Card.Body>
-                {board.questions.map((question, index) => (
+                {(board.questions || []).map((question, index) => (
                   <div key={index} className="mb-2">
                     <p className="mb-0">{question.content}</p>
                   </div>

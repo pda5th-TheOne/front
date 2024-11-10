@@ -147,6 +147,29 @@ export default function Question() {
     setActiveQuestion(questionIndex);
   };
 
+
+  // 질문 삭제 함수
+  const handleDeleteQuestion = async (questionId) => {
+    // 삭제 확인 alert
+    const isConfirmed = window.confirm('정말로 이 질문을 삭제하시겠습니까?');
+
+    if(isConfirmed) {
+      try {
+        // 질문을 삭제하는 API 요청
+        await axios.delete(`/api/questions/${questionId}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // 인증 토큰 포함
+          },
+        });
+
+        // 삭제 후 상태 업데이트 (삭제된 질문 제외한 새 리스트로 업데이트)
+        setQuestions(questions.filter((question) => question.id !== questionId));
+      } catch (error) {
+        console.error('Error deleting question:', error);
+      }
+    }
+  };
+
   return (
     <>
       <h2 className="mb-4">질문</h2>
@@ -156,6 +179,17 @@ export default function Question() {
           <Card className="mb-3">
             <Card.Body>
               <Card.Text>{question.content}</Card.Text>
+
+              {/* 삭제 버튼 추가 */}
+              <Button
+                variant="danger"
+                size="sm"
+                className="float-end"
+                onClick={() => handleDeleteQuestion(question.id)} // 삭제 버튼 클릭 시 질문 삭제
+              >
+                삭제
+              </Button>
+
               <Button
                 variant="warning"
                 size="sm"

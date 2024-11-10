@@ -2,11 +2,24 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, Container } from 'react-bootstrap';
 import EditButton from './EditButton';
+import { useNavigate } from 'react-router-dom';
 
 export default function Board({ board }) {
+  const navigate = useNavigate();
+
   if (!board) {
     return <p>데이터를 불러오는 중입니다...</p>;
   }
+
+  // 게시판 클릭 시 해당 페이지로 이동
+  const handleBoardClick = () => {
+    navigate(`/detail/${board.id}`);
+  };
+
+  // EditButton 클릭 시 이벤트 버블링 방지
+  const handleEditClick = (event) => {
+    event.stopPropagation(); // 이벤트 버블링 방지
+  };
 
   return (
     <Container
@@ -15,7 +28,8 @@ export default function Board({ board }) {
     >
       <Card
         className="shadow-sm"
-        style={{ width: '85%', borderRadius: '3rem' }}
+        style={{ width: '85%', borderRadius: '3rem', cursor: 'pointer' }}
+        onClick={handleBoardClick}
       >
         <Card.Body>
           <div className="d-flex justify-content-center align-items-center mb-4">
@@ -30,7 +44,7 @@ export default function Board({ board }) {
               {board.topic}
             </h1>
             <div style={{ position: 'absolute', right: '1rem' }}>
-              <EditButton />
+              <EditButton onClick={handleEditClick} boardId={board.id} />
             </div>
           </div>
 

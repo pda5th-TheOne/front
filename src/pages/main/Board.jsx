@@ -59,7 +59,7 @@ export default function Board({ boardData }) {
                   top3TILs.map((til, index) => (
                     <Alert key={index} variant="warning" className="mb-2">
                       <h4 className="h6 mb-1">{til.title}</h4>
-                      <a href={til.link} className="text-decoration-none">{til.link}</a>
+                      {/* <a href={til.link} className="text-decoration-none">{til.link}</a> */}
                     </Alert>
                   ))
                 ) : (

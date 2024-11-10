@@ -26,11 +26,11 @@ export default function Question() {
 
         setQuestions(Array.isArray(response.data) ? response.data : []); // Ensure data is an array
 
-        // 질문 당 답변까지 가져오기
+        // 질문데이터 저장
         const questionsData = Array.isArray(response.data) ? response.data : [];
         setQuestions(questionsData);
 
-        // Fetch replies for each question
+        // 질문 당 답변 가져오기 (reply.id로 관리해서 삭제할 때 사용)
         const repliesData = {};
         for (const question of response.data) {
           const repliesResponse = await axios.get(`/api/questions/${question.id}/replies`, {
@@ -39,7 +39,7 @@ export default function Question() {
             },
           });
 
-          // Store replies by reply.id
+          // reply.id로 관리해서 삭제할 때 사용
           repliesData[question.id] = repliesResponse.data.reduce((acc, reply) => {
             acc[reply.id] = reply;
             return acc;
@@ -58,7 +58,7 @@ export default function Question() {
   }, [accessToken, boardId]);
 
 
-  // Submit a new question to the API
+  // 질문 생성
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     if (newQuestion.trim() !== '') {
@@ -100,6 +100,7 @@ export default function Question() {
         }
       );
 
+      // 답변 등록완료 하면 새로고침 한번하기
       navigate(0);
     } catch (error) {
       console.error('Error adding reply:', error);
@@ -147,12 +148,13 @@ export default function Question() {
     }
   };
 
+  // 답변 버튼 눌렀을 때 핸들링
   const handleReplyClick = (questionIndex) => {
     setActiveQuestion(questionIndex);
   };
 
 
-  // 질문 삭제 함수
+  // 질문 삭제 함수 (본인이 등록한 것만 삭제 가능: accessToken의 userId로 검사함 Back 단에서)
   const handleDeleteQuestion = async (questionId) => {
     // 삭제 확인 alert
     const isConfirmed = window.confirm('정말로 이 질문을 삭제하시겠습니까?');
@@ -174,7 +176,7 @@ export default function Question() {
     }
   };
 
-  // 답글 삭제 함수
+  // 답글 삭제 함수 (본인이 등록한 것만 삭제 가능: accessToken의 userId로 검사함 Back 단에서)
   const deleteReply = async (questionId, replyId) => {
     // 삭제 확인 alert
     const isConfirmed = window.confirm('정말로 이 답변을 삭제하시겠습니까?');
@@ -206,13 +208,14 @@ export default function Question() {
     <>
       <h2 className="mb-4">질문</h2>
 
+      {/* 질문 카드 전체 관련 */}
       {questions.map((question, questionIndex) => (
         <div key={questionIndex} className="mb-4">
           <Card className="mb-3">
             <Card.Body>
               <Card.Text>{question.content}</Card.Text>
 
-              {/* 삭제 버튼 추가 */}
+              {/* 질문-삭제 버튼 추가 */}
               <Button
                 variant="danger"
                 size="sm"
@@ -222,6 +225,7 @@ export default function Question() {
                 삭제
               </Button>
 
+              {/* 질문-답변 버튼 추가 */}
               <Button
                 variant="warning"
                 size="sm"
@@ -234,7 +238,7 @@ export default function Question() {
             </Card.Body>
           </Card>
 
-          {/* Render replies for each question */}
+          {/* 답변에 대한 카드 */}
           {replies[question.id] &&
             Object.values(replies[question.id]).map((reply) => (
               <Card key={reply.id} className="mb-2 ms-4">
@@ -254,7 +258,7 @@ export default function Question() {
               </Card>
             ))}
 
-          {/* Show answer input field only for active question */}
+          {/* 답변 등록에 대한 Form */}
           {activeQuestion === questionIndex && (
             <Form
               onSubmit={(e) => handleRepliesSubmit(e, questionIndex)}
@@ -279,7 +283,7 @@ export default function Question() {
         </div>
       ))}
 
-      {/* Question input field */}
+      {/* 질문 등록에 대한 Form */}
       <Form onSubmit={handleQuestionSubmit} className="mt-4">
         <Form.Group>
           <Form.Label>질문 작성하기</Form.Label>

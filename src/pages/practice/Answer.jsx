@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Card, Button, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function Answer({ code: initialCode, practiceId, onRefresh }) {
+export default function Answer({ code: initialCode, practiceId }) {
   const [isEditing, setIsEditing] = useState(false);
   const [code, setCode] = useState(initialCode);
+  const navigate = useNavigate();
 
   const handleSave = async () => {
     const token = localStorage.getItem('accessToken');
     try {
       await axios.put(
         `/api/practices/${practiceId}/answer`,
-        JSON.stringify(code),
+        { newContent: code },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -20,7 +22,7 @@ export default function Answer({ code: initialCode, practiceId, onRefresh }) {
         }
       );
       setIsEditing(false);
-      if (onRefresh) onRefresh(); // 변경사항 반영을 위해 데이터 재요청
+      navigate(0);
     } catch (error) {
       console.error('Error updating answer:', error);
       alert('모범답안을 저장하는 데 문제가 발생했습니다.');

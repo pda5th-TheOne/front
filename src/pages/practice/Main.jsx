@@ -45,18 +45,16 @@ export default function Main({ practiceId }) {
               <Assignment
                 content={practiceData.assignment}
                 practiceId={practiceId}
-                onRefresh={fetchPracticeData}
               />
             </Col>
             <Col xs={12}>
-              <Answer
-                code={practiceData.answer}
+              <Answer code={practiceData.answer} practiceId={practiceId} />
+            </Col>
+            <Col xs={12}>
+              <Submit
+                usersPractices={practiceData.usersPractices}
                 practiceId={practiceId}
-                onRefresh={fetchPracticeData}
               />
-            </Col>
-            <Col xs={12}>
-              <Submit usersPractices={practiceData.usersPractices} />
             </Col>
           </Row>
         </Container>

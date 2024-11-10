@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import { Card, Button, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function Assignment({
-  content: initialContent,
-  practiceId,
-  onRefresh,
-}) {
+export default function Assignment({ content: initialContent, practiceId }) {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(initialContent);
+  const navigate = useNavigate();
 
   const handleSave = async () => {
     const token = localStorage.getItem('accessToken');
     try {
       await axios.put(
         `/api/practices/${practiceId}/assignment`,
-        JSON.stringify(content),
+        { newContent: content },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -24,7 +22,7 @@ export default function Assignment({
         }
       );
       setIsEditing(false);
-      if (onRefresh) onRefresh(); // 변경사항 반영을 위해 데이터 재요청
+      navigate(0);
     } catch (error) {
       console.error('Error updating assignment:', error);
       alert('실습 내용을 저장하는 데 문제가 발생했습니다.');

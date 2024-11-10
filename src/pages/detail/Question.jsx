@@ -32,16 +32,18 @@ export default function Question() {
 
         // Fetch replies for each question
         const repliesData = {};
-        for (const [index, question] of questionsData.entries()) {
+        for (const question of response.data) {
           const repliesResponse = await axios.get(`/api/questions/${question.id}/replies`, {
             headers: {
               Authorization: `Bearer ${accessToken}`, // Include access token in header
             },
           });
 
-          repliesData[index] = Array.isArray(repliesResponse.data)
-            ? repliesResponse.data.map(reply => reply.content)
-            : [];
+          // Store replies by reply.id
+          repliesData[question.id] = repliesResponse.data.reduce((acc, reply) => {
+            acc[reply.id] = reply;
+            return acc;
+          }, {});
         }
 
         setReplies(repliesData); // Store the replies
@@ -97,6 +99,8 @@ export default function Question() {
           },
         }
       );
+
+      navigate(0);
     } catch (error) {
       console.error('Error adding reply:', error);
       throw error;
@@ -170,6 +174,34 @@ export default function Question() {
     }
   };
 
+  // 답글 삭제 함수
+  const deleteReply = async (questionId, replyId) => {
+    // 삭제 확인 alert
+    const isConfirmed = window.confirm('정말로 이 답변을 삭제하시겠습니까?');
+
+    if (isConfirmed) {
+      try {
+        // 답변을 삭제하는 API 요청
+        await axios.delete(`/api/replies/${replyId}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // 인증 토큰 포함
+          },
+        });
+
+        // 삭제 후 상태 업데이트 (삭제된 답변 제외한 새 리스트로 업데이트)
+        setReplies((prevReplies) => {
+          const updatedReplies = { ...prevReplies };
+          const updatedQuestionReplies = { ...updatedReplies[questionId] };
+          delete updatedQuestionReplies[replyId]; // 삭제된 답글을 제거
+          updatedReplies[questionId] = updatedQuestionReplies;
+          return updatedReplies;
+        });
+      } catch (error) {
+        console.error('Error deleting reply:', error);
+      }
+    }
+  };
+
   return (
     <>
       <h2 className="mb-4">질문</h2>
@@ -203,13 +235,24 @@ export default function Question() {
           </Card>
 
           {/* Render replies for each question */}
-          {replies[questionIndex]?.map((answer, index) => (
-            <Card key={index} className="mb-2 ms-4">
-              <Card.Body>
-                <Card.Text>{answer}</Card.Text>
-              </Card.Body>
-            </Card>
-          ))}
+          {replies[question.id] &&
+            Object.values(replies[question.id]).map((reply) => (
+              <Card key={reply.id} className="mb-2 ms-4">
+                <Card.Body>
+                  <Card.Text>{reply.content}</Card.Text>
+
+                  {/* 답글 삭제 버튼 추가 */}
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    className="float-end"
+                    onClick={() => deleteReply(question.id, reply.id)} // 답글 삭제 시 replyId 사용
+                  >
+                    삭제
+                  </Button>
+                </Card.Body>
+              </Card>
+            ))}
 
           {/* Show answer input field only for active question */}
           {activeQuestion === questionIndex && (

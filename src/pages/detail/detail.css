@@ -38,6 +38,8 @@
 }
 
 .detail-contents-item {
+  display: flex;
+  justify-content: space-between;
   background-color: #fff9e6;
   padding: 10px;
   margin-bottom: 10px;
@@ -47,4 +49,38 @@
 
 .detail-contents-item:hover {
   background-color: #fff5d6;
+}
+
+/* 수정 버튼 스타일 */
+.detail-modify-button {
+  background-color: #fed45b; /* 버튼 색상 */
+  border: none;
+  padding: 6px 12px; /* 크기 조정: 세로 6px, 가로 12px */
+  margin: 1px;
+  font-size: 12px; /* 폰트 크기 줄이기 */
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.detail-modify-button:hover {
+  background-color: #f7c242; /* 호버 시 색상 */
+}
+
+/* 삭제 버튼 스타일 */
+.detail-delete-button {
+  background-color: #ff4747; /* 삭제 버튼 색상 */
+  border: none;
+  padding: 6px 12px; /* 크기 조정: 세로 6px, 가로 12px */
+  margin: 1px;
+  font-size: 12px; /* 폰트 크기 줄이기 */
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.detail-delete-button:hover {
+  background-color: #e63737; /* 호버 시 색상 */
 }

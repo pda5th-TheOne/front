@@ -135,7 +135,12 @@ export default function TIL() {
       <div className="detail-contents-list">
         {TILs.map((til, index) => (
           <div key={til.id} className="detail-contents-item">
-            <a href={til.link} target="_blank" rel="noopener noreferrer">
+            <a
+              className="detail-contents-link"
+              href={til.link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {til.title}
             </a>
             <div>

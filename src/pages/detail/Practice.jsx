@@ -78,7 +78,10 @@ export default function Practice() {
       <div className="detail-contents-list">
         {practices.map((practice, index) => (
           <div key={index} className="detail-contents-item">
-            <Link to={`/practices/${practice.id}`} className="practice-link">
+            <Link
+              to={`/practices/${practice.id}`}
+              className="detail-contents-link"
+            >
               {practice.title}
             </Link>
           </div>

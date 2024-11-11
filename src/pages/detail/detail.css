@@ -51,6 +51,12 @@
   background-color: #fff5d6;
 }
 
+.detail-contents-link {
+  text-decoration: none;
+  color: #614416;
+  font-weight: bold;
+}
+
 /* 수정 버튼 스타일 */
 .detail-modify-button {
   background-color: #fed45b; /* 버튼 색상 */

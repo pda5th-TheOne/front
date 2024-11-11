@@ -60,19 +60,21 @@
 - **GitHub Actions**: CI/CD 자동화
 
 ## 🗂 Architecture
-![architecture](./images/archit.png)
+![image](https://github.com/user-attachments/assets/14a85277-8a0f-4b8a-a750-9ec83eb6557b)
+
 
 
 ## 🗂 ERD & API 명세서
 - **ERD**: [ERD Diagram 보기](https://www.erdcloud.com/d/H37rrz8FdMHoPprRi)
-![erd](./images/erd.png)
+![image](https://github.com/user-attachments/assets/43eddf6a-d17c-41d5-aed7-2b25bb775a5a)
 
 --- 
 
 - **API 명세서**: [Swagger UI](http://43.203.139.109:8080/swagger-ui/index.html#/)
-![swagger1](./images/swagger1.png)
-![swagger2](./images/swagger2.png)
-![swagger3](./images/swagger3.png)
+![image](https://github.com/user-attachments/assets/7df90c25-2b6f-46e3-8e75-31958a21ba4f)
+![image](https://github.com/user-attachments/assets/16c98f7d-3d35-4a6f-96b5-ea1579ae643a)
+![image](https://github.com/user-attachments/assets/c4bb8834-d1b4-4ea0-9837-955e23b2dcc5)
+
 
 
 ## 📅 회고 및 개선 사항
